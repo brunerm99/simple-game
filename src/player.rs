@@ -50,6 +50,7 @@ impl PlayerBundle {
         PlayerBundle {
             name: name.to_owned(),
             health: Health::new(),
+            character: Character {},
             sprite: SpriteSheetBundle {
                 texture_atlas: texture_atlas_handle,
                 sprite: TextureAtlasSprite::new(0), // TODO: Change to default player state
