@@ -2,6 +2,9 @@ use crate::character::Character;
 use bevy::prelude::*;
 
 #[derive(Component)]
+pub struct Player;
+
+#[derive(Component)]
 pub struct Health {
     pub hp: i8,
 }
