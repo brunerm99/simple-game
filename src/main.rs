@@ -3,7 +3,7 @@ mod character;
 mod player;
 mod states;
 
-use actions::move_player;
+use actions::control::move_player;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use character::{AnimationIndices, CharacterMovement, CharacterMovementOptions, MovementSpeed};
@@ -14,7 +14,7 @@ const BASE_MOVEMENT_UNIT: f32 = 150.0;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest())) // prevents blurry sprites
+        .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_state::<GameState>()
         .add_loading_state(
             LoadingState::new(GameState::Loading).continue_to_state(GameState::Playing),
