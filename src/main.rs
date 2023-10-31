@@ -1,66 +1,76 @@
 mod character;
 mod player;
+mod states;
+
 use bevy::prelude::*;
+use bevy_asset_loader::prelude::*;
+use character::{AnimationIndices, CharacterMovements};
+use player::PlayerBundle;
+use states::GameState;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest())) // prevents blurry sprites
-        .add_systems(Startup, setup)
-        .add_systems(Update, animate_sprite)
+        .add_state::<GameState>()
+        .add_loading_state(
+            LoadingState::new(GameState::Loading).continue_to_state(GameState::Playing),
+        )
+        .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
+            GameState::Loading,
+            "characters/dynamic_asset.assets.ron",
+        )
+        .add_collection_to_loading_state::<_, ImageAssets>(GameState::Loading)
+        .insert_resource(Msaa::Off)
+        .add_systems(OnEnter(GameState::Playing), spawn_player)
+        .add_systems(
+            Update,
+            animate_sprite_movement.run_if(in_state(GameState::Playing)),
+        )
         .run();
 }
 
-#[derive(Component)]
-struct AnimationIndices {
-    first: usize,
-    last: usize,
+#[derive(AssetCollection, Resource)]
+struct ImageAssets {
+    #[asset(key = "image.player")]
+    player: Handle<TextureAtlas>,
 }
 
 #[derive(Component, Deref, DerefMut)]
 struct AnimationTimer(Timer);
 
-fn animate_sprite(
-    time: Res<Time>,
-    mut query: Query<(
-        &AnimationIndices,
-        &mut AnimationTimer,
-        &mut TextureAtlasSprite,
-    )>,
-) {
-    for (indices, mut timer, mut sprite) in &mut query {
-        timer.tick(time.delta());
-        if timer.just_finished() {
-            sprite.index = if sprite.index == indices.last {
-                indices.first
-            } else {
-                sprite.index + 1
-            };
-        }
-    }
-}
-
-fn setup(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-) {
-    let texture_handle = asset_server.load("player_spritesheet.png");
-    let texture_atlas =
-        TextureAtlas::from_grid(texture_handle, Vec2::new(32.0, 46.0), 6, 8, None, None);
-    let texture_atlas_handle = texture_atlases.add(texture_atlas);
-    let animation_indices = AnimationIndices {
-        first: 42,
-        last: 47,
-    };
+fn spawn_player(mut commands: Commands, image_assets: Res<ImageAssets>) {
     commands.spawn(Camera2dBundle::default());
     commands.spawn((
+        PlayerBundle::new("Marshall"),
+        CharacterMovements::IdleDown,
+        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
         SpriteSheetBundle {
-            texture_atlas: texture_atlas_handle,
-            sprite: TextureAtlasSprite::new(animation_indices.first),
             transform: Transform::from_scale(Vec3::splat(6.0)),
+            sprite: TextureAtlasSprite::new(0),
+            texture_atlas: image_assets.player.clone(),
             ..default()
         },
-        animation_indices,
-        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
     ));
+}
+
+fn animate_sprite_movement(
+    time: Res<Time>,
+    mut query: Query<(
+        &mut AnimationTimer,
+        &mut TextureAtlasSprite,
+        &CharacterMovements,
+    )>,
+) {
+    for (mut timer, mut sprite, movement_type) in &mut query {
+        let animation_indices = AnimationIndices::from_movement_type(movement_type);
+        timer.0.tick(time.delta());
+        if timer.0.finished() {
+            println!("{}", sprite.index);
+            if sprite.index >= animation_indices.1 || sprite.index < animation_indices.0 {
+                sprite.index = animation_indices.0
+            } else {
+                sprite.index += 1;
+            }
+        }
+    }
 }

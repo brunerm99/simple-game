@@ -1,0 +1,9 @@
+({
+    "image.player": TextureAtlas (
+        path: "characters/player_spritesheet.png",
+        tile_size_x: 32.,
+        tile_size_y: 46.,
+        columns: 6,
+        rows: 8
+    ),
+})
