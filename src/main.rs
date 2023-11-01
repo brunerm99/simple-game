@@ -42,7 +42,7 @@ fn main() {
 }
 
 // TODO: Remove?
-fn setup_physics(mut commands: Commands) {
+fn setup_physics(mut _commands: Commands) {
     // commands
     //     .spawn(RigidBody::Fixed)
     //     .insert(Collider::cuboid(500.0, 10.0))

@@ -46,12 +46,11 @@ fn spawn_rooms(mut commands: Commands, rooms: Res<Rooms>) {
                     .with_children(|room_parent| {
                         // Spawn walls as children of room
                         room.walls.iter().for_each(|wall| {
-                            let (wall_x, wall_y) = wall.dimensions();
                             room_parent
                                 .spawn(WallComponent)
                                 .insert(RigidBody::Fixed)
                                 .insert(Name(wall.name.clone()))
-                                .insert(Collider::cuboid(wall_x, wall_y))
+                                .insert(wall.as_collider())
                                 .insert(TransformBundle::from(Transform::from_xyz(
                                     wall.position.x,
                                     wall.position.y,
