@@ -21,6 +21,12 @@ pub enum CharacterMovementOptions {
 #[derive(Component)]
 pub struct MovementSpeed(pub u8);
 
+impl Default for MovementSpeed {
+    fn default() -> Self {
+        MovementSpeed(1)
+    }
+}
+
 pub struct AnimationIndices(pub usize, pub usize);
 
 impl AnimationIndices {

@@ -1,0 +1,51 @@
+(
+    rooms: {
+        "starting_room": Room(
+            interactables: [
+                Interactable(
+                    name: "chair",
+                    position: (20.0, 20.0),
+                    collider_size: (15.0, 15.0),
+                ),
+                Interactable(
+                    name: "desk",
+                    position: (60.0, 20.0),
+                    collider_size: (10.0, 30.0),
+                )
+            ],
+            walls: [
+                Wall( 
+                    name: "right_wall",
+                    length: 160.0,
+                    orientation: Vertical,
+                    position: (210.0, 0.0),
+                ),
+                Wall(                     
+                    name: "left_bottom_wall",
+                    length: 60.0,
+                    orientation: Vertical,
+                    position: (-210.0, -100.0),
+                ),
+                Wall( 
+                    name: "left_top_wall",
+                    length: 60.0,
+                    orientation: Vertical,
+                    position: (-210.0, 100.0),
+                ),
+                Wall( 
+                    name: "bottom_wall",
+                    length: 200.0,
+                    orientation: Horizontal,
+                    position: (0.0, -170.0),
+                ),
+                Wall( 
+                    name: "top_wall",
+                    length: 200.0,
+                    orientation: Horizontal,
+                    position: (0.0, 170.0),
+                ),
+            ],
+            position: (-200.0, 0.0),
+        )
+    }
+)
